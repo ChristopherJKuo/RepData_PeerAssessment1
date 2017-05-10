@@ -1,25 +1,108 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "PA1_template"
+author: "Christopher Kuo"
+date: "May 9, 2017"
+output: html_document
 ---
 
+1. Code for reading in the dataset and/or processing the data
 
-## Loading and preprocessing the data
+```{r, message = FALSE, warning = FALSE}
+require(dplyr)
+t <- read.csv("activity.csv")
+tdate <- group_by(t,date)
+tdatesum <- summarize(tdate, sum(steps, na.rm = TRUE))
+tdatesum$date <- as.Date(tdatesum$date)
+```
+
+2. Histogram of the total number of steps taken each day
+
+```{r, warning = FALSE, message = FALSE}
+require(ggplot2)
+
+p <- ggplot(tdatesum, aes(x = date, y=`sum(steps, na.rm = TRUE)`)) +geom_bar(stat = "identity") + scale_x_date()
+p2 <- p + ylab("Total Steps") + xlab("Date") + ggtitle("Total Steps Per Day")
+p2
+```
+
+3. Mean and median number of steps taken each day
+```{r}
+meansteps <- mean(tdatesum$`sum(steps, na.rm = TRUE)`, na.rm= TRUE)
+meansteps
+mediansteps <- median(tdatesum$`sum(steps, na.rm = TRUE)`)
+mediansteps
+```
+
+4.Time series plot of the average number of steps taken
+```{r}
+tinterval <- group_by(t, interval)
+tintervalmean <- summarize(tinterval, mean(steps, na.rm = TRUE))
+pint = ggplot(tintervalmean, aes(x=interval, y= `mean(steps, na.rm = TRUE)`)) + geom_line()
+pint2 <- pint + ylab("Average Steps") + xlab("Interval Number") + ggtitle("Average Steps Taken Per Time Interval")
+pint2
+```
+
+5.The 5-minute interval that, on average, contains the maximum number of steps
+```{r}
+which.max(tintervalmean$`mean(steps, na.rm = TRUE)`)
+```
+
+6. Code to describe and show a strategy for imputing missing data
+
+Fill in missing values with average value at that interval across all days.
+```{r}
+table(is.na(t$steps))
 
 
+timputed <- t
+impute <- function(steps, interval){
+    corsteps <- NA
+    if(is.na(steps) == TRUE){
+        corsteps <- tintervalmean$`mean(steps, na.rm = TRUE)`[which(tintervalmean$interval == interval)]
+    }
+    else{
+        corsteps <- steps
+    }
+    corsteps
+}
+timputed$steps <- mapply(impute, timputed$steps, timputed$interval)
+table(is.na(timputed$steps))
+```
 
-## What is mean total number of steps taken per day?
+7.Histogram of the total number of steps taken each day after missing values are imputed
+```{r}
+tdate <- group_by(timputed,date)
+tdatesum <- summarize(tdate, sum(steps, na.rm = TRUE))
+tdatesum$date <- as.Date(tdatesum$date)
 
+p <- ggplot(tdatesum, aes(x = date, y=`sum(steps, na.rm = TRUE)`)) +geom_bar(stat = "identity") + scale_x_date()
+p2 <- p + ylab("Total Steps") + xlab("Date") + ggtitle("Total Steps Per Day With Imputation")
+p2
+```
 
+8. Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
+```{r, message = FALSE, warning = FALSE}
+library(lubridate)
+t$date <- as.Date(t$date)
+t$day <- wday(t$date)
 
-## What is the average daily activity pattern?
+is.weekday <- function(day){
+    if(day == 1 | day == 7){
+        weekday <- "weekend"
+    }
+    else{
+        weekday <- "weekday"
+    }
+    weekday
+}
 
+t$weekday <- t$day
+t$weekday <- sapply(t$day, is.weekday)
 
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+tintday <- group_by(t, interval, weekday)
+tintdaymean <- summarize(tintday, mean(steps, na.rm = TRUE))
+pintday = ggplot(tintdaymean, aes(x=interval, y= `mean(steps, na.rm = TRUE)`)) + geom_line()
+pintday2 <- pintday + ylab("Average Steps") + xlab("Interval Number") + ggtitle("Average Steps Taken Per Time Interval Divided by Weekday")
+pintday3 <- pintday2 + facet_grid(weekday ~ .)
+pintday3
+```

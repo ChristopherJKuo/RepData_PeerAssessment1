@@ -18,7 +18,7 @@
     p2 <- p + ylab("Total Steps") + xlab("Date") + ggtitle("Total Steps Per Day")
     p2
 
-![](PA1_template_files/figure-markdown_strict/unnamed-chunk-2-1.png)
+![](PA1_template_files/figure-markdown_strict/plot1-1.png)
 
 1.  Mean and median number of steps taken each day
 
@@ -42,7 +42,7 @@
     pint2 <- pint + ylab("Average Steps") + xlab("Interval Number") + ggtitle("Average Steps Taken Per Time Interval")
     pint2
 
-![](PA1_template_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+![](PA1_template_files/figure-markdown_strict/plot2-1.png)
 
 5.The 5-minute interval that, on average, contains the maximum number of
 steps
@@ -91,7 +91,7 @@ values are imputed
     p2 <- p + ylab("Total Steps") + xlab("Date") + ggtitle("Total Steps Per Day With Imputation")
     p2
 
-![](PA1_template_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![](PA1_template_files/figure-markdown_strict/plot3-1.png)
 
 1.  Panel plot comparing the average number of steps taken per 5-minute
     interval across weekdays and weekends
@@ -122,4 +122,4 @@ values are imputed
     pintday3 <- pintday2 + facet_grid(weekday ~ .)
     pintday3
 
-![](PA1_template_files/figure-markdown_strict/unnamed-chunk-8-1.png)
+![](PA1_template_files/figure-markdown_strict/plot4-1.png)

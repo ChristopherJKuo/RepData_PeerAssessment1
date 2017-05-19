@@ -2,7 +2,7 @@
 title: "PA1_template"
 author: "Christopher Kuo"
 date: "May 9, 2017"
-output: html_document
+output: md_document
 ---
 
 1. Code for reading in the dataset and/or processing the data
@@ -17,7 +17,7 @@ tdatesum$date <- as.Date(tdatesum$date)
 
 2. Histogram of the total number of steps taken each day
 
-```{r, warning = FALSE, message = FALSE}
+```{r plot1, warning = FALSE, message = FALSE}
 require(ggplot2)
 
 p <- ggplot(tdatesum, aes(x = date, y=`sum(steps, na.rm = TRUE)`)) +geom_bar(stat = "identity") + scale_x_date()
@@ -34,7 +34,7 @@ mediansteps
 ```
 
 4.Time series plot of the average number of steps taken
-```{r}
+```{r plot2}
 tinterval <- group_by(t, interval)
 tintervalmean <- summarize(tinterval, mean(steps, na.rm = TRUE))
 pint = ggplot(tintervalmean, aes(x=interval, y= `mean(steps, na.rm = TRUE)`)) + geom_line()
@@ -70,7 +70,7 @@ table(is.na(timputed$steps))
 ```
 
 7.Histogram of the total number of steps taken each day after missing values are imputed
-```{r}
+```{r plot3}
 tdate <- group_by(timputed,date)
 tdatesum <- summarize(tdate, sum(steps, na.rm = TRUE))
 tdatesum$date <- as.Date(tdatesum$date)
@@ -81,7 +81,7 @@ p2
 ```
 
 8. Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
-```{r, message = FALSE, warning = FALSE}
+```{r plot4, message = FALSE, warning = FALSE}
 library(lubridate)
 t$date <- as.Date(t$date)
 t$day <- wday(t$date)
